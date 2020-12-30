@@ -7,6 +7,8 @@ var sizeRandomness = 4000;
 var dirs = [];
 var parts = [];
 var colors = [0xFF0FFF, 0xCCFF00, 0xFF000F, 0x996600, 0xFFFFFF];
+var hit = new Audio('sound.mp3');
+var catchBall = new Audio('catch.wav');
 
 var PointerLockControls = function (camera, cannonBody) {
 
@@ -434,12 +436,15 @@ function init() {
     targetMeshes.push(boxMesh);
     
     let listener = function (e) {
+        catchBall.play();
         // boxbody.removeEventListener("collide", listener);    
         boxbody.position.set(positionX, (2) * (size * 2 + 2 * space) + size * 2 + space,0)
         light.position.set(positionX, (2) * (size * 2 + 2 * space) + size * 2 + space, 0);
         randomColor = '#' + (Math.random() * 0xFFFFFF << 0).toString(16);
         boxMesh.material.color.set(randomColor);
-        // lightSphere.material.color.setHex(randomColor);
+        // lightSphere.material.color.set(randomColor);
+        light.color.set(randomColor);
+
 
         parts.push(new ExplodeAnimation(positionX, (2) * (size * 2 + 2 * space) + size * 2 + space));
         positionX = (Math.random() - 0.5) * 40;
@@ -502,53 +507,55 @@ function animate() {
             }
         }
 
-        if (count % 30 == 0 && boxMeshes.length < 500) {
-            var halfExtents = new CANNON.Vec3(1, 1, 1);
-            var boxShape = new CANNON.Box(halfExtents);
-            var boxShape = new CANNON.Sphere(0.5);
-            var boxGeometry = new THREE.BoxGeometry(halfExtents.x * 2, halfExtents.y * 2, halfExtents.z * 2);
-            var boxGeometry = new THREE.SphereGeometry(0.5, 20, 20);
+        // if (count % 30 == 0 && boxMeshes.length < 500) {
+        //     var halfExtents = new CANNON.Vec3(1, 1, 1);
+        //     var boxShape = new CANNON.Box(halfExtents);
+        //     var boxShape = new CANNON.Sphere(0.5);
+        //     var boxGeometry = new THREE.BoxGeometry(halfExtents.x * 2, halfExtents.y * 2, halfExtents.z * 2);
+        //     var boxGeometry = new THREE.SphereGeometry(0.5, 20, 20);
 
-            var x = (Math.random() - 0.5) * 40;
-            var y = 1 + (Math.random() - 0.5) * 1;
-            var z = (Math.random() - 0.5) * 40;
-            var boxBody = new CANNON.Body({ mass: 5 });
-            boxBody.addShape(boxShape);
+        //     var x = (Math.random() - 0.5) * 40;
+        //     var y = 1 + (Math.random() - 0.5) * 1;
+        //     var z = (Math.random() - 0.5) * 40;
+        //     var boxBody = new CANNON.Body({ mass: 5 });
+        //     boxBody.addShape(boxShape);
 
-            // var shootDirection = new THREE.Vector3();
-            // getShootDir(shootDirection);
+        //     // var shootDirection = new THREE.Vector3();
+        //     // getShootDir(shootDirection);
 
-            boxBody.velocity.set((x - sphereBody.position.x) * -1,
-                0,
-                (z - sphereBody.position.z) * -1);
-
-
-
-            var randomColor = '#' + (Math.random() * 0xFFFFFF << 0).toString(16);
-            material2 = new THREE.MeshLambertMaterial({ color: randomColor });
-            var boxMesh = new THREE.Mesh(boxGeometry, material2);
-            world.add(boxBody);
-            scene.add(boxMesh);
-            boxBody.position.set(x, y, z);
-            boxMesh.position.set(x, y, z);
-            boxMesh.castShadow = true;
-            boxMesh.receiveShadow = true;
-            boxes.push(boxBody);
-            boxMeshes.push(boxMesh);
+        //     boxBody.velocity.set((x - sphereBody.position.x) * -1,
+        //         0,
+        //         (z - sphereBody.position.z) * -1);
 
 
 
-            if (count == 60) {
-                count = 0;
-                let removedMesh = boxMeshes[0];
-                scene.getObjectById(removedMesh.id).geometry.dispose();
-                scene.getObjectById(removedMesh.id).material.dispose();
-                scene.remove(scene.getObjectById(removedMesh.id));
-                boxMeshes.shift();
-                boxes.shift();
-                renderer.render( scene, camera );
-            }
-        }
+        //     var randomColor = '#' + (Math.random() * 0xFFFFFF << 0).toString(16);
+        //     material2 = new THREE.MeshLambertMaterial({ color: randomColor });
+        //     var boxMesh = new THREE.Mesh(boxGeometry, material2);
+        //     world.add(boxBody);
+        //     scene.add(boxMesh);
+        //     boxBody.position.set(x, y, z);
+        //     boxMesh.position.set(x, y, z);
+        //     boxMesh.castShadow = true;
+        //     boxMesh.receiveShadow = true;
+        //     boxes.push(boxBody);
+        //     boxMeshes.push(boxMesh);
+
+
+
+        //     if (count == 60) {
+        //         count = 0;
+        //         let removedMesh = boxMeshes[0];
+        //         scene.getObjectById(removedMesh.id).geometry.dispose();
+        //         scene.getObjectById(removedMesh.id).material.dispose();
+        //         scene.remove(scene.getObjectById(removedMesh.id));
+        //         let removedElemMesh = boxMeshes.shift();
+        //         let removedElem = boxes.shift();
+        //         removedElemMesh = undefined;
+        //         removedElem = undefined;
+        //         renderer.render( scene, camera );
+        //     }
+        // }
         count++;
 
 
@@ -736,12 +743,13 @@ window.addEventListener("click", function (e) {
 
                         let idx = ballMeshes.findIndex(x => x.id == ballMesh.id);
                         ballMeshes.splice(idx, 1);
+                        balls[idx] = undefined;
                         balls.splice(idx, 1);
-                    } else {
-                        // console.log("ball not found", ballMesh.id);
+                        ballMesh = undefined;
+                        remove = undefined;
 
-                    }
-
+                    } 
+                    removedMesh = undefined;
                     const color = 0xFFFFFF;
                     const intensity = 1;
 
@@ -749,7 +757,7 @@ window.addEventListener("click", function (e) {
                     // light.position.set(e.contact.ni.x, e.contact.ni.y, e.contact.ni.z);
 
                     // scene.add(light);
-                    new Audio('sound.mp3').play();
+                    hit.play();
 
                 } else {
                     // console.log(e.contact.bi.id);
@@ -767,7 +775,12 @@ window.addEventListener("click", function (e) {
 
                     let idx = ballMeshes.findIndex(x => x.id == ballMesh.id);
                     ballMeshes.splice(idx, 1);
+                    balls[idx] = undefined
                     balls.splice(idx, 1);
+
+                    ballMesh = undefined;
+
+                    
                 }
             }, 3000);
 
