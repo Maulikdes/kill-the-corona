@@ -507,55 +507,55 @@ function animate() {
             }
         }
 
-        // if (count % 30 == 0 && boxMeshes.length < 500) {
-        //     var halfExtents = new CANNON.Vec3(1, 1, 1);
-        //     var boxShape = new CANNON.Box(halfExtents);
-        //     var boxShape = new CANNON.Sphere(0.5);
-        //     var boxGeometry = new THREE.BoxGeometry(halfExtents.x * 2, halfExtents.y * 2, halfExtents.z * 2);
-        //     var boxGeometry = new THREE.SphereGeometry(0.5, 20, 20);
+        if (count % 30 == 0 && boxMeshes.length < 500) {
+            var halfExtents = new CANNON.Vec3(1, 1, 1);
+            var boxShape = new CANNON.Box(halfExtents);
+            var boxShape = new CANNON.Sphere(0.5);
+            var boxGeometry = new THREE.BoxGeometry(halfExtents.x * 2, halfExtents.y * 2, halfExtents.z * 2);
+            var boxGeometry = new THREE.SphereGeometry(0.5, 20, 20);
 
-        //     var x = (Math.random() - 0.5) * 40;
-        //     var y = 1 + (Math.random() - 0.5) * 1;
-        //     var z = (Math.random() - 0.5) * 40;
-        //     var boxBody = new CANNON.Body({ mass: 5 });
-        //     boxBody.addShape(boxShape);
+            var x = (Math.random() - 0.5) * 40;
+            var y = 1 + (Math.random() - 0.5) * 1;
+            var z = (Math.random() - 0.5) * 40;
+            var boxBody = new CANNON.Body({ mass: 5 });
+            boxBody.addShape(boxShape);
 
-        //     // var shootDirection = new THREE.Vector3();
-        //     // getShootDir(shootDirection);
+            // var shootDirection = new THREE.Vector3();
+            // getShootDir(shootDirection);
 
-        //     boxBody.velocity.set((x - sphereBody.position.x) * -1,
-        //         0,
-        //         (z - sphereBody.position.z) * -1);
-
-
-
-        //     var randomColor = '#' + (Math.random() * 0xFFFFFF << 0).toString(16);
-        //     material2 = new THREE.MeshLambertMaterial({ color: randomColor });
-        //     var boxMesh = new THREE.Mesh(boxGeometry, material2);
-        //     world.add(boxBody);
-        //     scene.add(boxMesh);
-        //     boxBody.position.set(x, y, z);
-        //     boxMesh.position.set(x, y, z);
-        //     boxMesh.castShadow = true;
-        //     boxMesh.receiveShadow = true;
-        //     boxes.push(boxBody);
-        //     boxMeshes.push(boxMesh);
+            boxBody.velocity.set((x - sphereBody.position.x) * -1,
+                0,
+                (z - sphereBody.position.z) * -1);
 
 
 
-        //     if (count == 60) {
-        //         count = 0;
-        //         let removedMesh = boxMeshes[0];
-        //         scene.getObjectById(removedMesh.id).geometry.dispose();
-        //         scene.getObjectById(removedMesh.id).material.dispose();
-        //         scene.remove(scene.getObjectById(removedMesh.id));
-        //         let removedElemMesh = boxMeshes.shift();
-        //         let removedElem = boxes.shift();
-        //         removedElemMesh = undefined;
-        //         removedElem = undefined;
-        //         renderer.render( scene, camera );
-        //     }
-        // }
+            var randomColor = '#' + (Math.random() * 0xFFFFFF << 0).toString(16);
+            material2 = new THREE.MeshLambertMaterial({ color: randomColor });
+            var boxMesh = new THREE.Mesh(boxGeometry, material2);
+            world.add(boxBody);
+            scene.add(boxMesh);
+            boxBody.position.set(x, y, z);
+            boxMesh.position.set(x, y, z);
+            boxMesh.castShadow = true;
+            boxMesh.receiveShadow = true;
+            boxes.push(boxBody);
+            boxMeshes.push(boxMesh);
+
+
+
+            if (count == 60) {
+                count = 0;
+                let removedMesh = boxMeshes[0];
+                scene.getObjectById(removedMesh.id).geometry.dispose();
+                scene.getObjectById(removedMesh.id).material.dispose();
+                scene.remove(scene.getObjectById(removedMesh.id));
+                let removedElemMesh = boxMeshes.shift();
+                let removedElem = boxes.shift();
+                removedElemMesh = undefined;
+                removedElem = undefined;
+                renderer.render( scene, camera );
+            }
+        }
         count++;
 
 
@@ -636,6 +636,12 @@ function ExplodeAnimation(x, y) {
             this.object.geometry.verticesNeedUpdate = true;
         }
     }
+
+    setTimeout(function(){
+        scene.getObjectById(this.object.id, true).geometry.dispose();
+        scene.getObjectById(this.object.id, true).material.dispose();
+        scene.remove(scene.getObjectById(this.object.id));
+    },2000);
 
 }
 
