@@ -442,6 +442,8 @@ function init() {
         light.position.set(positionX, (2) * (size * 2 + 2 * space) + size * 2 + space, 0);
         randomColor = '#' + (Math.random() * 0xFFFFFF << 0).toString(16);
         boxMesh.material.color.set(randomColor);
+        console.log(lightMesh);
+        lightMesh.color.set(randomColor);
         // lightSphere.material.color.set(randomColor);
         light.color.set(randomColor);
 
@@ -471,7 +473,8 @@ function init() {
 
 
     var lightSphere = new THREE.SphereBufferGeometry(0.5, 16, 8);
-    light.add(new THREE.Mesh(lightSphere, new THREE.MeshStandardMaterial({ color: randomColor })));
+    var lightMesh = new THREE.MeshStandardMaterial({ color: randomColor });
+    light.add(new THREE.Mesh(lightSphere, lightMesh));
     scene.add(light);
 
 
@@ -741,7 +744,7 @@ window.addEventListener("click", function (e) {
                     boxMeshes.splice(boxIdx, 1);
                     boxes.splice(boxIdx, 1);
 
-                    if (scene.getObjectById(ballMesh.id, true)) {
+                    if (ballMesh && scene.getObjectById(ballMesh.id, true)) {
                         // console.log("~~~ball mesh ", ballMesh.id, ballMeshes);
                         scene.getObjectById(ballMesh.id, true).geometry.dispose();
                         scene.getObjectById(ballMesh.id, true).material.dispose();
@@ -774,7 +777,6 @@ window.addEventListener("click", function (e) {
 
             setTimeout(function () {
                 if (scene.getObjectById(ballMesh.id, true)) {
-                    // console.log("~~~ball mesh ", ballMesh.id, ballMeshes);
                     scene.getObjectById(ballMesh.id, true).geometry.dispose();
                     scene.getObjectById(ballMesh.id, true).material.dispose();
                     scene.remove(scene.getObjectById(ballMesh.id));
