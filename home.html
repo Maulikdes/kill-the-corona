@@ -5,20 +5,39 @@
   <title>Hackathon</title>
   <link rel="stylesheet" href="./style.css">
 
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+	<script>
+		$(function() {
+			$(".meter > span").each(function() {
+				$(this)
+					.data("origWidth", $(this).width())
+					.width(0)
+					.animate({
+						width: $(this).data("origWidth")
+					}, 1200);
+			});
+		});
+	</script>
+
 </head>
 <body>
 <div id="blocker">
-
-            <div id="instructions">
-                <span style="font-size:40px">Click to play</span>
-                <br />
-                (W,A,S,D = Move, SPACE = Jump, MOUSE = Look, CLICK = Shoot)
-            </div>
-
-        </div>
- <script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r77/three.min.js'></script>
+  <div id="instructions">
+      <span style="font-size:40px">Click to play</span>
+      <br />
+      (W,A,S,D = Move, SPACE = Jump, MOUSE = Look, CLICK = Shoot)
+  </div>
+</div>
+<span style="position: absolute; z-index: 50; right:0;" >
+  <span id="score" class="step">0</span>
+</span>
+<span style="position: absolute; z-index: 50; left:0; width:20%" >
+  <div class="meter">
+    <span id="health" style="width: 100%"></span>
+  </div>
+</span>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r77/three.min.js'></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.js'></script>
 <script src='https://threejs.org/examples/js/renderers/Projector.js'></script><script  src="./script.js"></script>
-
 </body>
 </html>

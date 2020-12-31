@@ -9,6 +9,8 @@ var parts = [];
 var colors = [0xFF0FFF, 0xCCFF00, 0xFF000F, 0x996600, 0xFFFFFF];
 var hit = new Audio('sound.mp3');
 var catchBall = new Audio('catch.wav');
+var score = 0
+var health = 25;
 
 var PointerLockControls = function (camera, cannonBody) {
 
@@ -38,13 +40,17 @@ var PointerLockControls = function (camera, cannonBody) {
     cannonBody.addEventListener("collide", function (e) {
         var contact = e.contact;
 
-        // console.log(e);
-        // if(contact.si == ownId)
+
+        if(contact.si.constructor.name == 'Sphere' && contact.sj.constructor.name=='Sphere'){
+            reduceHealth();
+        }
 
         // contact.bi and contact.bj are the colliding bodies, and contact.ni is the collision normal.
         // We do not yet know which one is which! Let's check.
         if (contact.bi.id == cannonBody.id)  // bi is the player body, flip the contact normal
-            contact.ni.negate(contactNormal);
+            {
+                console.log(contact.bi.id, cannonBody.id);
+                contact.ni.negate(contactNormal);}
         else {
             contactNormal.copy(contact.ni); // bi is something else. Keep the normal as it is
 
@@ -447,7 +453,7 @@ function init() {
         // lightSphere.material.color.set(randomColor);
         light.color.set(randomColor);
 
-
+        increaseCounter();
         parts.push(new ExplodeAnimation(positionX, (2) * (size * 2 + 2 * space) + size * 2 + space));
         positionX = (Math.random() - 0.5) * 40;
         render();
@@ -641,9 +647,11 @@ function ExplodeAnimation(x, y) {
     }
 
     setTimeout(function(){
-        scene.getObjectById(this.object.id, true).geometry.dispose();
-        scene.getObjectById(this.object.id, true).material.dispose();
-        scene.remove(scene.getObjectById(this.object.id));
+        if(this.object){
+            scene.getObjectById(this.object.id, true).geometry.dispose();
+            scene.getObjectById(this.object.id, true).material.dispose();
+            scene.remove(scene.getObjectById(this.object.id));
+        }
     },2000);
 
 }
@@ -776,7 +784,7 @@ window.addEventListener("click", function (e) {
 
 
             setTimeout(function () {
-                if (scene.getObjectById(ballMesh.id, true)) {
+                if (ballMesh && scene.getObjectById(ballMesh.id, true)) {
                     scene.getObjectById(ballMesh.id, true).geometry.dispose();
                     scene.getObjectById(ballMesh.id, true).material.dispose();
                     scene.remove(scene.getObjectById(ballMesh.id));
@@ -798,3 +806,15 @@ window.addEventListener("click", function (e) {
 
     }
 });
+
+function increaseCounter(){
+    document.getElementById("score").innerHTML = Number(document.getElementById("score").innerHTML)+1;
+}
+
+function reduceHealth(){
+    document.getElementById("health").style.width = (document.getElementById("health").style.width.replace("px","") - 10) +"px";
+    if((document.getElementById("health").style.width.replace("px","") - 10)<0){
+        alert("game over");
+        location.reload();
+    }
+}
