@@ -1,4 +1,3 @@
-
 var ownId, groundId;
 var movementSpeed = 80;
 var totalObjects = 1000;
@@ -9,6 +8,9 @@ var parts = [];
 var colors = [0xFF0FFF, 0xCCFF00, 0xFF000F, 0x996600, 0xFFFFFF];
 var hit = new Audio('sound.mp3');
 var catchBall = new Audio('catch.wav');
+var gotAHit = new Audio('gotahit.mp3');
+var targetHit = new Audio('targethit.mp3');
+var gameOver = new Audio('game-over.wav');
 var score = 0
 var health = 25;
 
@@ -41,16 +43,19 @@ var PointerLockControls = function (camera, cannonBody) {
         var contact = e.contact;
 
 
-        if(contact.si.constructor.name == 'Sphere' && contact.sj.constructor.name=='Sphere'){
+        if (contact.si.constructor.name == 'Sphere' && contact.sj.constructor.name == 'Sphere') {
+            gotAHit.play();
+            gotAHit.play();
             reduceHealth();
         }
 
         // contact.bi and contact.bj are the colliding bodies, and contact.ni is the collision normal.
         // We do not yet know which one is which! Let's check.
         if (contact.bi.id == cannonBody.id)  // bi is the player body, flip the contact normal
-            {
-                console.log(contact.bi.id, cannonBody.id);
-                contact.ni.negate(contactNormal);}
+        {
+            console.log(contact.bi.id, cannonBody.id);
+            contact.ni.negate(contactNormal);
+        }
         else {
             contactNormal.copy(contact.ni); // bi is something else. Keep the normal as it is
 
@@ -208,6 +213,8 @@ var controls, time = Date.now();
 
 var blocker = document.getElementById('blocker');
 var instructions = document.getElementById('instructions');
+var gameOverDialog = document.getElementById('gameoverdialog');
+var resultDetails = document.getElementById('result_details');
 
 var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
 
@@ -351,6 +358,13 @@ function init() {
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
 
     scene = new THREE.Scene();
+
+    setInterval(function(){
+        console.log(scene.children.length);
+    },2000)
+
+
+
     scene.fog = new THREE.Fog(0x000000, 0, 500);
 
     var ambient = new THREE.AmbientLight(0x404040);
@@ -427,7 +441,7 @@ function init() {
     // material2 = new THREE.MeshBasicMaterial( { color: randomColor } );
     material2 = new THREE.MeshBasicMaterial({
         color: randomColor,
-        roughness: 0.2, metalness: 1.0, wireframe: true
+        wireframe: true
     })
     boxbody.addShape(boxShape);
     var positionX = (Math.random() - 0.5) * 40;
@@ -440,11 +454,11 @@ function init() {
     scene.add(boxMesh);
     targetBoxes.push(boxbody);
     targetMeshes.push(boxMesh);
-    
+
     let listener = function (e) {
         catchBall.play();
         // boxbody.removeEventListener("collide", listener);    
-        boxbody.position.set(positionX, (2) * (size * 2 + 2 * space) + size * 2 + space,0)
+        boxbody.position.set(positionX, (2) * (size * 2 + 2 * space) + size * 2 + space, 0)
         light.position.set(positionX, (2) * (size * 2 + 2 * space) + size * 2 + space, 0);
         randomColor = '#' + (Math.random() * 0xFFFFFF << 0).toString(16);
         boxMesh.material.color.set(randomColor);
@@ -457,17 +471,18 @@ function init() {
         parts.push(new ExplodeAnimation(positionX, (2) * (size * 2 + 2 * space) + size * 2 + space));
         positionX = (Math.random() - 0.5) * 40;
         render();
+        targetHit.play();
 
-			function render() {
-        requestAnimationFrame( render );
-         
-        var pCount = parts.length;
-          while(pCount--) {
-            parts[pCount].update();
-          }
+        function render() {
+            requestAnimationFrame(render);
 
-				renderer.render( scene, camera );
-			}
+            var pCount = parts.length;
+            while (pCount--) {
+                parts[pCount].update();
+            }
+
+            // renderer.render(scene, camera);
+        }
     }
 
     boxbody.addEventListener("collide", listener);
@@ -562,7 +577,7 @@ function animate() {
                 let removedElem = boxes.shift();
                 removedElemMesh = undefined;
                 removedElem = undefined;
-                renderer.render( scene, camera );
+                renderer.render(scene, camera);
             }
         }
         count++;
@@ -601,13 +616,13 @@ function animate() {
 function ExplodeAnimation(x, y) {
 
 
-    if(parts.length>1){
+    if (parts.length > 1) {
         let part = parts.shift();
         part.object.geometry.dispose();
         part.object.material.dispose();
         scene.remove(part.object);
-        dirs=[];
-        renderer.render( scene, camera );
+        dirs = [];
+        renderer.render(scene, camera);
     }
 
     var geometry = new THREE.Geometry();
@@ -618,7 +633,7 @@ function ExplodeAnimation(x, y) {
         vertex.z = 0;
 
         geometry.vertices.push(vertex);
-        
+
         dirs.push({ x: (Math.random() * movementSpeed) - (movementSpeed / 2), y: (Math.random() * movementSpeed) - (movementSpeed / 2), z: (Math.random() * movementSpeed) - (movementSpeed / 2) });
     }
     var material = new THREE.ParticleBasicMaterial({ size: objectSize, color: colors[Math.round(Math.random() * colors.length)] });
@@ -646,13 +661,14 @@ function ExplodeAnimation(x, y) {
         }
     }
 
-    setTimeout(function(){
-        if(this.object){
-            scene.getObjectById(this.object.id, true).geometry.dispose();
-            scene.getObjectById(this.object.id, true).material.dispose();
-            scene.remove(scene.getObjectById(this.object.id));
+    let obj = this.object;
+    setTimeout(function () {
+        if (obj) {
+            scene.getObjectById(obj.id, true).geometry.dispose();
+            scene.getObjectById(obj.id, true).material.dispose();
+            scene.remove(scene.getObjectById(obj.id));
         }
-    },2000);
+    }, 2000);
 
 }
 
@@ -713,7 +729,7 @@ window.addEventListener("click", function (e) {
             material2 = new THREE.MeshBasicMaterial({
                 // map:texture,
                 color: new THREE.Color("lightgreen"),
-                roughness: 2, metalness: 10, wireframe: true
+                wireframe: true
             })
             //   THREE.MeshPhongMaterial( { color: randomColor } );
             let ballMesh = new THREE.Mesh(ballGeometry, material2);
@@ -765,7 +781,7 @@ window.addEventListener("click", function (e) {
                         ballMesh = undefined;
                         remove = undefined;
 
-                    } 
+                    }
                     removedMesh = undefined;
                     const color = 0xFFFFFF;
                     const intensity = 1;
@@ -796,7 +812,7 @@ window.addEventListener("click", function (e) {
 
                     ballMesh = undefined;
 
-                    
+
                 }
             }, 3000);
 
@@ -807,14 +823,26 @@ window.addEventListener("click", function (e) {
     }
 });
 
-function increaseCounter(){
-    document.getElementById("score").innerHTML = Number(document.getElementById("score").innerHTML)+1;
+function increaseCounter() {
+    document.getElementById("score").innerHTML = Number(document.getElementById("score").innerHTML) + 1;
 }
 
-function reduceHealth(){
-    document.getElementById("health").style.width = (document.getElementById("health").style.width.replace("px","") - 10) +"px";
-    if((document.getElementById("health").style.width.replace("px","") - 10)<0){
-        alert("game over");
-        location.reload();
+function reduceHealth() {
+    document.getElementById("health").style.width = (document.getElementById("health").style.width.replace("px", "") - 10) + "px";
+    if ((document.getElementById("health").style.width.replace("px", "") - 8) < 0) {
+        controls.enabled = false;
+
+        document.getElementById("result").innerHTML = document.getElementById("score").innerHTML;
+
+        gameOverDialog.style.display = '-webkit-box';
+        gameOverDialog.style.display = '-moz-box';
+        gameOverDialog.style.display = 'box';
+
+        resultDetails.style.display = '';
+        gameOver.play();
+        document.onkeydown = function () {
+            location.reload();
+        }
+        // location.reload();
     }
 }
