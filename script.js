@@ -840,8 +840,10 @@ function reduceHealth() {
 
         resultDetails.style.display = '';
         gameOver.play();
-        document.onkeydown = function () {
-            location.reload();
+        document.onkeydown = function (event) {
+            if(event.keyCode == 13){
+                location.reload();
+            }
         }
         // location.reload();
     }
