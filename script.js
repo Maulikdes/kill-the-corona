@@ -208,7 +208,7 @@ var sphereShape, sphereBody, world, physicsMaterial, walls = [], balls = [], bal
     targetBoxes = [], targetMeshes = [];
 
 var camera, scene, renderer;
-var geometry, material, mesh;
+var geometry, material, mesh, texture;
 var controls, time = Date.now();
 
 var blocker = document.getElementById('blocker');
@@ -358,6 +358,14 @@ function init() {
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
 
     scene = new THREE.Scene();
+
+
+
+    texture = new THREE.TextureLoader().load( "covid.jpg" );
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set( 1, 1 );
+
 
     setInterval(function(){
         console.log(scene.children.length);
@@ -554,7 +562,7 @@ function animate() {
 
 
             var randomColor = '#' + (Math.random() * 0xFFFFFF << 0).toString(16);
-            material2 = new THREE.MeshLambertMaterial({ color: randomColor });
+            material2 = new THREE.MeshLambertMaterial({ color: randomColor	, map:texture });
             var boxMesh = new THREE.Mesh(boxGeometry, material2);
             world.add(boxBody);
             scene.add(boxMesh);
