@@ -1,0 +1,265 @@
+{
+  "accessors": [
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 36742,
+      "max": [
+        156.09585571289062,
+        24.840829849243164,
+        -25.11732292175293
+      ],
+      "min": [
+        113.43557739257812,
+        -17.892963409423828,
+        -67.821990966796875
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 440904,
+      "componentType": 5126,
+      "count": 36742,
+      "max": [
+        0.99999934434890747,
+        0.99999988079071045,
+        0.99999845027923584
+      ],
+      "min": [
+        -1,
+        -0.99999874830245972,
+        -0.99999964237213135
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 36742,
+      "max": [
+        0.60392159223556519,
+        0.56862747669219971,
+        0.57254904508590698,
+        1
+      ],
+      "min": [
+        0.19607843458652496,
+        0.14901961386203766,
+        0.15686275064945221,
+        1
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 219444,
+      "max": [
+        36741
+      ],
+      "min": [
+        0
+      ],
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 881808,
+      "componentType": 5126,
+      "count": 48759,
+      "max": [
+        166.51641845703125,
+        32.023834228515625,
+        -17.349437713623047
+      ],
+      "min": [
+        106.70877838134766,
+        -26.517551422119141,
+        -76.287124633789062
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 1466916,
+      "componentType": 5126,
+      "count": 48759,
+      "max": [
+        0.9999997615814209,
+        0.99999988079071045,
+        1
+      ],
+      "min": [
+        -0.9999997615814209,
+        -1,
+        -0.99999964237213135
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 587872,
+      "componentType": 5126,
+      "count": 48759,
+      "max": [
+        0.59607845544815063,
+        0.023529412224888802,
+        0.090196080505847931,
+        1
+      ],
+      "min": [
+        0.46666666865348816,
+        0,
+        0.066666670143604279,
+        1
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 877776,
+      "componentType": 5125,
+      "count": 290502,
+      "max": [
+        48758
+      ],
+      "min": [
+        0
+      ],
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "Evan Pachon (https://sketchfab.com/Evanpachon)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/coronavirus-covid-19-virus-991102145c294fe4b633faecc23f3799",
+      "title": "Coronavirus / COVID-19 / Virus"
+    },
+    "generator": "Sketchfab-7.97.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 2039784,
+      "byteOffset": 0,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 2052024,
+      "byteOffset": 2039784,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1368016,
+      "byteOffset": 4091808,
+      "byteStride": 16,
+      "name": "floatBufferViews",
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 5459824,
+      "uri": "scene.bin"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "name": "material_0",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.59999999999999998
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "primitives": [
+        {
+          "attributes": {
+            "COLOR_0": 2,
+            "NORMAL": 1,
+            "POSITION": 0
+          },
+          "indices": 3,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "primitives": [
+        {
+          "attributes": {
+            "COLOR_0": 6,
+            "NORMAL": 5,
+            "POSITION": 4
+          },
+          "indices": 7,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "name": "RootNode (gltf orientation matrix)",
+      "rotation": [
+        -0.70710678118654746,
+        -0,
+        -0,
+        0.70710678118654757
+      ]
+    },
+    {
+      "children": [
+        2
+      ],
+      "name": "RootNode (model correction matrix)"
+    },
+    {
+      "children": [
+        3,
+        4
+      ],
+      "name": "coronavirus.obj.cleaner.materialmerger.gles"
+    },
+    {
+      "mesh": 0,
+      "name": ""
+    },
+    {
+      "mesh": 1,
+      "name": ""
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "OSG_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ]
+}
+

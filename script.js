@@ -208,7 +208,7 @@ var sphereShape, sphereBody, world, physicsMaterial, walls = [], balls = [], bal
     targetBoxes = [], targetMeshes = [];
 
 var camera, scene, renderer;
-var geometry, material, mesh, texture;
+var geometry, material, mesh, texture, gltf;
 var controls, time = Date.now();
 
 var blocker = document.getElementById('blocker');
@@ -223,6 +223,9 @@ if (havePointerLock) {
     var element = document.body;
 
     var pointerlockchange = function (event) {
+        if(!controls){
+            return;
+        }
 
         if (document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element) {
 
@@ -298,9 +301,10 @@ if (havePointerLock) {
 
 }
 
-initCannon();
-init();
-animate();
+document.addEventListener("DOMContentLoaded", function(){
+    initCannon();
+    init();
+  });
 
 function initCannon() {
     // Setup our world
@@ -354,158 +358,182 @@ function initCannon() {
 }
 
 function init() {
-
+    console.log("init called")
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
-
     scene = new THREE.Scene();
 
+    const loader = new THREE.GLTFLoader();
+    loader.load(
+        'corona-3d/scene.gltf',
+        function (converted) {
+            console.log("loaded");
+            gltf = converted;
+            animate();
+            texture = new THREE.TextureLoader().load("covid.jpg");
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set(1, 1);
 
 
-    texture = new THREE.TextureLoader().load( "covid.jpg" );
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set( 1, 1 );
-
-
-    setInterval(function(){
-        console.log(scene.children.length);
-    },2000)
-
-
-
-    scene.fog = new THREE.Fog(0x000000, 0, 500);
-
-    var ambient = new THREE.AmbientLight(0x404040);
-    scene.add(ambient);
-
-    let light = new THREE.SpotLight(0xffffff);
-    light.position.set(10, 30, 20);
-    light.target.position.set(0, 0, 0);
-    if (true) {
-        light.castShadow = true;
-
-        light.shadow.camera.near = 20;
-        light.shadow.camera.far = 50;//camera.far;
-        light.shadow.camera.fov = 40;
-
-        light.shadowMapBias = 0.1;
-        light.shadowMapDarkness = 0.7;
-        light.shadow.mapSize.width = 2 * 512;
-        light.shadow.mapSize.height = 2 * 512;
-
-        //light.shadowCameraVisible = true;
-    }
-    scene.add(light);
+            setInterval(function () {
+                console.log(scene.children.length);
+            }, 2000)
 
 
 
-    controls = new PointerLockControls(camera, sphereBody);
-    scene.add(controls.getObject());
+            scene.fog = new THREE.Fog(0x000000, 0, 500);
 
-    // floor
-    geometry = new THREE.PlaneGeometry(300, 300, 50, 50);
-    geometry.applyMatrix(new THREE.Matrix4().makeRotationX(- Math.PI / 2));
+            var ambient = new THREE.AmbientLight(0x404040);
+            scene.add(ambient);
 
-    material = new THREE.MeshLambertMaterial({ color: 0x2194ce });
+            let light = new THREE.SpotLight(0xffffff);
+            light.position.set(10, 30, 20);
+            light.target.position.set(0, 0, 0);
+            if (true) {
+                light.castShadow = true;
 
-    mesh = new THREE.Mesh(geometry, material);
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-    scene.add(mesh);
+                light.shadow.camera.near = 20;
+                light.shadow.camera.far = 50;//camera.far;
+                light.shadow.camera.fov = 40;
 
-    renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMapSoft = true;
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(scene.fog.color, 1);
+                light.shadowMapBias = 0.1;
+                light.shadowMapDarkness = 0.7;
+                light.shadow.mapSize.width = 2 * 512;
+                light.shadow.mapSize.height = 2 * 512;
 
-    document.body.appendChild(renderer.domElement);
-
-    window.addEventListener('resize', onWindowResize, false);
-
-    // Add boxes
-    var halfExtents = new CANNON.Vec3(1, 1, 1);
-    var boxShape = new CANNON.Box(halfExtents);
-    var boxShape = new CANNON.Sphere(0.5);
-    var boxGeometry = new THREE.BoxGeometry(halfExtents.x * 2, halfExtents.y * 2, halfExtents.z * 2);
-    var boxGeometry = new THREE.SphereGeometry(0.5, 20, 20);
+                //light.shadowCameraVisible = true;
+            }
+            scene.add(light);
 
 
-    // var x = (Math.random()-0.5)*20;
-    // var y = 1 + (Math.random()-0.5)*50;
-    // var z = (Math.random()-0.5)*20;
+
+            controls = new PointerLockControls(camera, sphereBody);
+            scene.add(controls.getObject());
+
+            // floor
+            geometry = new THREE.PlaneGeometry(300, 300, 50, 50);
+            geometry.applyMatrix(new THREE.Matrix4().makeRotationX(- Math.PI / 2));
+
+            material = new THREE.MeshLambertMaterial({ color: 0x2194ce });
+
+            mesh = new THREE.Mesh(geometry, material);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            scene.add(mesh);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMapSoft = true;
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(scene.fog.color, 1);
+
+            document.body.appendChild(renderer.domElement);
+
+            window.addEventListener('resize', onWindowResize, false);
+
+            // Add boxes
+            var halfExtents = new CANNON.Vec3(1, 1, 1);
+            var boxShape = new CANNON.Box(halfExtents);
+            var boxShape = new CANNON.Sphere(0.5);
+            var boxGeometry = new THREE.BoxGeometry(halfExtents.x * 2, halfExtents.y * 2, halfExtents.z * 2);
+            var boxGeometry = new THREE.SphereGeometry(0.5, 20, 20);
 
 
-    // Add target
-    var size = 0.5;
-    var he = new CANNON.Vec3(size, size, size * 0.1);
-    var boxShape = new CANNON.Box(he);
-    var mass = 0;
-    var space = 0.1 * size;
-    // var boxGeometry = new THREE.BoxGeometry(he.x*2,he.y*2,he.z*2);
-    var boxGeometry = new THREE.SphereGeometry(1, 20, 20, 0, Math.PI * 2, 0, Math.PI * 2);
-    var boxbody = new CANNON.Body({ mass: mass });
-    var randomColor = '#' + (Math.random() * 0xFFFFFF << 0).toString(16);
-    // material2 = new THREE.MeshBasicMaterial( { color: randomColor } );
-    material2 = new THREE.MeshBasicMaterial({
-        color: randomColor,
-        wireframe: true
-    })
-    boxbody.addShape(boxShape);
-    var positionX = (Math.random() - 0.5) * 40;
-    var boxMesh = new THREE.Mesh(boxGeometry, material2);
-    boxbody.position.set(positionX, (2) * (size * 2 + 2 * space) + size * 2 + space, 0);
-    boxbody.linearDamping = 0.01;
-    boxbody.angularDamping = 0.01;
-    boxMesh.receiveShadow = true;
-    world.add(boxbody);
-    scene.add(boxMesh);
-    targetBoxes.push(boxbody);
-    targetMeshes.push(boxMesh);
+            // var x = (Math.random()-0.5)*20;
+            // var y = 1 + (Math.random()-0.5)*50;
+            // var z = (Math.random()-0.5)*20;
 
-    let listener = function (e) {
-        catchBall.play();
-        // boxbody.removeEventListener("collide", listener);    
-        boxbody.position.set(positionX, (2) * (size * 2 + 2 * space) + size * 2 + space, 0)
-        light.position.set(positionX, (2) * (size * 2 + 2 * space) + size * 2 + space, 0);
-        randomColor = '#' + (Math.random() * 0xFFFFFF << 0).toString(16);
-        boxMesh.material.color.set(randomColor);
-        console.log(lightMesh);
-        lightMesh.color.set(randomColor);
-        // lightSphere.material.color.set(randomColor);
-        light.color.set(randomColor);
 
-        increaseCounter();
-        parts.push(new ExplodeAnimation(positionX, (2) * (size * 2 + 2 * space) + size * 2 + space));
-        positionX = (Math.random() - 0.5) * 40;
-        render();
-        targetHit.play();
+            // Add target
+            var size = 0.5;
+            var he = new CANNON.Vec3(size, size, size * 0.1);
+            var boxShape = new CANNON.Box(he);
+            var mass = 0;
+            var space = 0.1 * size;
+            // var boxGeometry = new THREE.BoxGeometry(he.x*2,he.y*2,he.z*2);
+            var boxGeometry = new THREE.SphereGeometry(1, 20, 20, 0, Math.PI * 2, 0, Math.PI * 2);
+            var boxbody = new CANNON.Body({ mass: mass });
+            var randomColor = '#' + (Math.random() * 0xFFFFFF << 0).toString(16);
+            // material2 = new THREE.MeshBasicMaterial( { color: randomColor } );
+            material2 = new THREE.MeshBasicMaterial({
+                color: randomColor,
+                wireframe: true,
+                wireframeLinewidth: 0.1
+            })
+            boxbody.addShape(boxShape);
+            var positionX = (Math.random() - 0.5) * 40;
+            var boxMesh = new THREE.Mesh(boxGeometry, material2);
+            boxbody.position.set(positionX, (2) * (size * 2 + 2 * space) + size * 2 + space, 0);
+            boxbody.linearDamping = 0.01;
+            boxbody.angularDamping = 0.01;
+            boxMesh.receiveShadow = true;
+            world.add(boxbody);
+            scene.add(boxMesh);
+            targetBoxes.push(boxbody);
+            targetMeshes.push(boxMesh);
 
-        function render() {
-            requestAnimationFrame(render);
+            let listener = function (e) {
+                catchBall.play();
+                // boxbody.removeEventListener("collide", listener);    
+                boxbody.position.set(positionX, (2) * (size * 2 + 2 * space) + size * 2 + space, 0)
+                light.position.set(positionX, (2) * (size * 2 + 2 * space) + size * 2 + space, 0);
 
-            var pCount = parts.length;
-            while (pCount--) {
-                parts[pCount].update();
+                light.position.set(positionX, (2) * (size * 2 + 2 * space) + size * 2 + space, 0);
+
+                covidModel.position.set(positionX + 2 - 5.5, (2) * (size * 2 + 2 * space) + size * 2 + space + 1.2, 0);
+
+
+                randomColor = '#' + (Math.random() * 0xFFFFFF << 0).toString(16);
+                boxMesh.material.color.set(randomColor);
+                // lightSphere.material.color.set(randomColor);
+                light.color.set(randomColor);
+
+                increaseCounter();
+                parts.push(new ExplodeAnimation(positionX, (2) * (size * 2 + 2 * space) + size * 2 + space));
+                positionX = (Math.random() - 0.5) * 40;
+                render();
+                targetHit.play();
+
+                function render() {
+                    requestAnimationFrame(render);
+
+                    var pCount = parts.length;
+                    while (pCount--) {
+                        parts[pCount].update();
+                    }
+
+                    // renderer.render(scene, camera);
+                }
             }
 
-            // renderer.render(scene, camera);
+            boxbody.addEventListener("collide", listener);
+
+
+            light = new THREE.PointLight(0xff0000, 1, 100);
+            light.position.set(positionX, (2) * (size * 2 + 2 * space) + size * 2 + space, 0);
+
+            var covidModel = gltf.scene.children[0];
+            covidModel.position.set(positionX + 2 - 5.5, (2) * (size * 2 + 2 * space) + size * 2 + space + 1.2, 0);
+
+
+            // var lightMesh = new THREE.MeshStandardMaterial({ color: randomColor });
+            gltf.scene.children[0].scale.set(0.025, 0.025, 0.025);
+            scene.add(covidModel);
+            scene.add(light);
+
+        },
+        // called while loading is progressing
+        function (xhr) {
+
+            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+
+        },
+        // called when loading has errors
+        function (error) {
+            console.log('An error happened');
+
         }
-    }
-
-    boxbody.addEventListener("collide", listener);
-
-
-    light = new THREE.PointLight(0xff0000, 1, 100);
-    light.position.set(positionX, (2) * (size * 2 + 2 * space) + size * 2 + space, 0);
-
-
-
-    var lightSphere = new THREE.SphereBufferGeometry(0.5, 16, 8);
-    var lightMesh = new THREE.MeshStandardMaterial({ color: randomColor });
-    light.add(new THREE.Mesh(lightSphere, lightMesh));
-    scene.add(light);
-
+    );
 
 }
 
@@ -520,7 +548,7 @@ var dt = 1 / 60;
 var count = 0;
 function animate() {
     requestAnimationFrame(animate);
-    if (controls.enabled) {
+    if (controls && controls.enabled) {
         world.step(dt);
 
         // Update ball positions
@@ -534,12 +562,12 @@ function animate() {
         for (var i = 0; i < targetBoxes.length; i++) {
             targetMeshes[i].position.copy(targetBoxes[i].position);
             targetMeshes[i].quaternion.copy(targetBoxes[i].quaternion);
-            if (count % 9 == 0) {
-                targetMeshes[i].scale.set((count % 10) / 10 + 0.5, (count % 10) / 10 + (0.5), (count % 10) / 10 + (0.5));
-            }
+            // if (count % 9 == 0) {
+            //     targetMeshes[i].scale.set((count % 10) / 10 + 0.5, (count % 10) / 10 + (0.5), (count % 10) / 10 + (0.5));
+            // }
         }
 
-        if (count % 30 == 0 && boxMeshes.length < 500) {
+        if (undefined && count % 30 == 0 && boxMeshes.length < 500) {
             var halfExtents = new CANNON.Vec3(1, 1, 1);
             var boxShape = new CANNON.Box(halfExtents);
             var boxShape = new CANNON.Sphere(0.5);
@@ -562,7 +590,7 @@ function animate() {
 
 
             var randomColor = '#' + (Math.random() * 0xFFFFFF << 0).toString(16);
-            material2 = new THREE.MeshLambertMaterial({ color: randomColor	, map:texture });
+            material2 = new THREE.MeshLambertMaterial({ color: randomColor, map: texture });
             var boxMesh = new THREE.Mesh(boxGeometry, material2);
             world.add(boxBody);
             scene.add(boxMesh);
@@ -613,11 +641,10 @@ function animate() {
 
 
         }
+        controls.update(Date.now() - time);
+        renderer.render(scene, camera);
+        time = Date.now();
     }
-
-    controls.update(Date.now() - time);
-    renderer.render(scene, camera);
-    time = Date.now();
 
 }
 
@@ -710,7 +737,7 @@ function getShootDir(targetVec, displacementX) {
 }
 
 window.addEventListener("click", function (e) {
-    if (controls.enabled == true) {
+    if (controls && controls.enabled == true) {
         var x = sphereBody.position.x;
         var y = sphereBody.position.y;
         var z = sphereBody.position.z;
@@ -849,7 +876,7 @@ function reduceHealth() {
         resultDetails.style.display = '';
         gameOver.play();
         document.onkeydown = function (event) {
-            if(event.keyCode == 13){
+            if (event.keyCode == 13) {
                 location.reload();
             }
         }
