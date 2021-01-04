@@ -567,7 +567,7 @@ function animate() {
             // }
         }
 
-        if (undefined && count % 30 == 0 && boxMeshes.length < 500) {
+        if (count % 30 == 0 && boxMeshes.length < 500) {
             var halfExtents = new CANNON.Vec3(1, 1, 1);
             var boxShape = new CANNON.Box(halfExtents);
             var boxShape = new CANNON.Sphere(0.5);
