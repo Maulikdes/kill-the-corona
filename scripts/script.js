@@ -14,6 +14,7 @@ var gameOver = new Audio('assets/sound/game-over.wav');
 var bulletShoot = new Audio('assets/sound/bullet-shoot.mp3');
 var score = 0
 var health = 25;
+var fadeEffect;
 
 var PointerLockControls = function (camera, cannonBody) {
 
@@ -303,6 +304,21 @@ if (havePointerLock) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+    const preloader = document.querySelector('.preloader');
+
+    fadeEffect = setInterval(() => {
+        if (!preloader.style.opacity) {
+            preloader.style.opacity = 1;
+        }
+        if (preloader.style.opacity > 0) {
+            preloader.style.opacity -= 0.075;
+        } else {
+            clearInterval(fadeEffect);
+        }
+    }, 1000);
+
+    // window.addEventListener('load', fadeEffect);
+
     initCannon();
     init();
 });
@@ -359,7 +375,6 @@ function initCannon() {
 }
 
 function init() {
-    console.log("init called")
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
     scene = new THREE.Scene();
 
@@ -367,7 +382,7 @@ function init() {
     loader.load(
         'assets/corona-model/scene.gltf',
         function (converted) {
-            console.log("loaded");
+            document.querySelector('.preloader').style.display='none';
             gltf = converted;
             animate();
             texture = new THREE.TextureLoader().load("assets/images/covid.jpg");
