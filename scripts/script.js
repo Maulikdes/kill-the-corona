@@ -311,7 +311,7 @@ document.addEventListener("DOMContentLoaded", function () {
             preloader.style.opacity = 1;
         }
         if (preloader.style.opacity > 0) {
-            preloader.style.opacity -= 0.075;
+            preloader.style.opacity -= 0.005;
         } else {
             clearInterval(fadeEffect);
         }
@@ -383,6 +383,7 @@ function init() {
         'assets/corona-model/scene.gltf',
         function (converted) {
             document.querySelector('.preloader').style.display='none';
+            document.querySelector('#blocker').style.display = 'block';
             gltf = converted;
             animate();
             texture = new THREE.TextureLoader().load("assets/images/covid.jpg");
