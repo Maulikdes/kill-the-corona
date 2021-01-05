@@ -1,2 +1,2 @@
-# catch-the-ball
-Game developed using three js
+# KILL THE CORONA
+Fun 3D Game developed using three js
