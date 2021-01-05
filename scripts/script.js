@@ -11,6 +11,7 @@ var catchBall = new Audio('assets/sound/catch.wav');
 var gotAHit = new Audio('assets/sound/gotahit.mp3');
 var targetHit = new Audio('assets/sound/targethit.mp3');
 var gameOver = new Audio('assets/sound/game-over.wav');
+var bulletShoot = new Audio('assets/sound/bullet-shoot.mp3');
 var score = 0
 var health = 25;
 
@@ -223,7 +224,7 @@ if (havePointerLock) {
     var element = document.body;
 
     var pointerlockchange = function (event) {
-        if(!controls){
+        if (!controls) {
             return;
         }
 
@@ -301,10 +302,10 @@ if (havePointerLock) {
 
 }
 
-document.addEventListener("DOMContentLoaded", function(){
+document.addEventListener("DOMContentLoaded", function () {
     initCannon();
     init();
-  });
+});
 
 function initCannon() {
     // Setup our world
@@ -401,7 +402,6 @@ function init() {
                 light.shadow.mapSize.width = 2 * 512;
                 light.shadow.mapSize.height = 2 * 512;
 
-                //light.shadowCameraVisible = true;
             }
             scene.add(light);
 
@@ -437,11 +437,6 @@ function init() {
             var boxShape = new CANNON.Sphere(0.5);
             var boxGeometry = new THREE.BoxGeometry(halfExtents.x * 2, halfExtents.y * 2, halfExtents.z * 2);
             var boxGeometry = new THREE.SphereGeometry(0.5, 20, 20);
-
-
-            // var x = (Math.random()-0.5)*20;
-            // var y = 1 + (Math.random()-0.5)*50;
-            // var z = (Math.random()-0.5)*20;
 
 
             // Add target
@@ -582,9 +577,6 @@ function animate() {
             var boxBody = new CANNON.Body({ mass: 5 });
             boxBody.addShape(boxShape);
 
-            // var shootDirection = new THREE.Vector3();
-            // getShootDir(shootDirection);
-
             boxBody.velocity.set((x - sphereBody.position.x) * -1,
                 0,
                 (z - sphereBody.position.z) * -1);
@@ -625,23 +617,8 @@ function animate() {
 
         // Update box positions
         for (var i = 0; i < boxes.length; i++) {
-
-
-
             boxMeshes[i].position.copy(boxes[i].position);
             boxMeshes[i].quaternion.copy(boxes[i].quaternion);
-
-
-
-
-            // try to come again
-            // console.log(boxMeshes[i].position)
-            // boxMeshes[i].position.setX((controls.getObject().position.x -  boxMeshes[i].position.x < 0) ? boxMeshes[i].position.x+1 :boxMeshes[i].position.x-1);
-            // // boxMeshes[i].position.setY((controls.getObject().position.y -  boxMeshes[i].position.y < 0) ? boxMeshes[i].position.y+1 :boxMeshes[i].position.y-1);
-            // boxMeshes[i].position.setZ((controls.getObject().position.z -  boxMeshes[i].position.z < 0) ? boxMeshes[i].position.z+1 :boxMeshes[i].position.z-1);
-            // console.log(boxMeshes[i].position)
-
-
         }
         controls.update(Date.now() - time);
         renderer.render(scene, camera);
@@ -651,8 +628,6 @@ function animate() {
 }
 
 function ExplodeAnimation(x, y) {
-
-
     if (parts.length > 1) {
         let part = parts.shift();
         part.object.geometry.dispose();
@@ -723,16 +698,9 @@ function getShootDir(targetVec, displacementX) {
 
 
     vector.unproject(camera);
-    // let position = sphereBody.position;
-    // console.log(camera);
-    // vector.x = vector.x - displacementX;
 
     vector.x = vector.x * Math.cos(displacementX) - vector.z * Math.sin(displacementX);
     vector.z = vector.x * Math.sin(displacementX) + vector.z * Math.cos(displacementX);
-
-
-
-
 
     var ray = new THREE.Ray(sphereBody.position, vector.sub(sphereBody.position).normalize());
     targetVec.copy(ray.direction);
@@ -851,6 +819,8 @@ window.addEventListener("click", function (e) {
 
 
         }
+        bulletShoot.currentTime=0;
+        bulletShoot.play();
 
     }
 });
@@ -877,6 +847,5 @@ function reduceHealth() {
                 location.reload();
             }
         }
-        // location.reload();
     }
 }
