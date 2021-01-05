@@ -6,11 +6,11 @@ var sizeRandomness = 4000;
 var dirs = [];
 var parts = [];
 var colors = [0xFF0FFF, 0xCCFF00, 0xFF000F, 0x996600, 0xFFFFFF];
-var hit = new Audio('sound.mp3');
-var catchBall = new Audio('catch.wav');
-var gotAHit = new Audio('gotahit.mp3');
-var targetHit = new Audio('targethit.mp3');
-var gameOver = new Audio('game-over.wav');
+var hit = new Audio('assets/sound/sound.mp3');
+var catchBall = new Audio('assets/sound/catch.wav');
+var gotAHit = new Audio('assets/sound/gotahit.mp3');
+var targetHit = new Audio('assets/sound/targethit.mp3');
+var gameOver = new Audio('assets/sound/game-over.wav');
 var score = 0
 var health = 25;
 
@@ -44,7 +44,7 @@ var PointerLockControls = function (camera, cannonBody) {
 
 
         if (contact.si.constructor.name == 'Sphere' && contact.sj.constructor.name == 'Sphere') {
-            gotAHit.play();
+            gotAHit.currentTime = 0;
             gotAHit.play();
             reduceHealth();
         }
@@ -364,12 +364,12 @@ function init() {
 
     const loader = new THREE.GLTFLoader();
     loader.load(
-        'corona-3d/scene.gltf',
+        'assets/corona-model/scene.gltf',
         function (converted) {
             console.log("loaded");
             gltf = converted;
             animate();
-            texture = new THREE.TextureLoader().load("covid.jpg");
+            texture = new THREE.TextureLoader().load("assets/images/covid.jpg");
             texture.wrapS = THREE.RepeatWrapping;
             texture.wrapT = THREE.RepeatWrapping;
             texture.repeat.set(1, 1);
@@ -473,6 +473,7 @@ function init() {
             targetMeshes.push(boxMesh);
 
             let listener = function (e) {
+                catchBall.currentTime = 0;
                 catchBall.play();
                 // boxbody.removeEventListener("collide", listener);    
                 boxbody.position.set(positionX, (2) * (size * 2 + 2 * space) + size * 2 + space, 0)
@@ -492,6 +493,7 @@ function init() {
                 parts.push(new ExplodeAnimation(positionX, (2) * (size * 2 + 2 * space) + size * 2 + space));
                 positionX = (Math.random() - 0.5) * 40;
                 render();
+                targetHit.currentTime = 0;
                 targetHit.play();
 
                 function render() {
@@ -821,15 +823,10 @@ window.addEventListener("click", function (e) {
                     const color = 0xFFFFFF;
                     const intensity = 1;
 
-                    // const light = new THREE.PointLight(color, intensity);
-                    // light.position.set(e.contact.ni.x, e.contact.ni.y, e.contact.ni.z);
-
-                    // scene.add(light);
+                    hit.currentTime = 0;
                     hit.play();
 
                 } else {
-                    // console.log(e.contact.bi.id);
-                    // console.log(e);
                 }
             });
 
@@ -863,7 +860,7 @@ function increaseCounter() {
 }
 
 function reduceHealth() {
-    document.getElementById("health").style.width = (document.getElementById("health").style.width.replace("px", "") - 10) + "px";
+    document.getElementById("health").style.width = (document.getElementById("health").style.width.replace("px", "") - 8) + "px";
     if ((document.getElementById("health").style.width.replace("px", "") - 8) < 0) {
         controls.enabled = false;
 
