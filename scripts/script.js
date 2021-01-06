@@ -55,7 +55,6 @@ var PointerLockControls = function (camera, cannonBody) {
         // We do not yet know which one is which! Let's check.
         if (contact.bi.id == cannonBody.id)  // bi is the player body, flip the contact normal
         {
-            console.log(contact.bi.id, cannonBody.id);
             contact.ni.negate(contactNormal);
         }
         else {
@@ -391,13 +390,6 @@ function init() {
             texture.wrapT = THREE.RepeatWrapping;
             texture.repeat.set(1, 1);
 
-
-            setInterval(function () {
-                console.log(scene.children.length);
-            }, 2000)
-
-
-
             scene.fog = new THREE.Fog(0x000000, 0, 500);
 
             var ambient = new THREE.AmbientLight(0x404040);
@@ -461,19 +453,18 @@ function init() {
             var boxShape = new CANNON.Box(he);
             var mass = 0;
             var space = 0.1 * size;
-            // var boxGeometry = new THREE.BoxGeometry(he.x*2,he.y*2,he.z*2);
             var boxGeometry = new THREE.SphereGeometry(1, 20, 20, 0, Math.PI * 2, 0, Math.PI * 2);
             var boxbody = new CANNON.Body({ mass: mass });
             var randomColor = '#' + (Math.random() * 0xFFFFFF << 0).toString(16);
-            // material2 = new THREE.MeshBasicMaterial( { color: randomColor } );
-            material2 = new THREE.MeshBasicMaterial({
+
+            bulltetMaterial = new THREE.MeshBasicMaterial({
                 color: randomColor,
                 wireframe: true,
                 wireframeLinewidth: 0.1
             })
             boxbody.addShape(boxShape);
             var positionX = (Math.random() - 0.5) * 40;
-            var boxMesh = new THREE.Mesh(boxGeometry, material2);
+            var boxMesh = new THREE.Mesh(boxGeometry, bulltetMaterial);
             boxbody.position.set(positionX, (2) * (size * 2 + 2 * space) + size * 2 + space, 0);
             boxbody.linearDamping = 0.01;
             boxbody.angularDamping = 0.01;
@@ -575,16 +566,10 @@ function animate() {
         for (var i = 0; i < targetBoxes.length; i++) {
             targetMeshes[i].position.copy(targetBoxes[i].position);
             targetMeshes[i].quaternion.copy(targetBoxes[i].quaternion);
-            // if (count % 9 == 0) {
-            //     targetMeshes[i].scale.set((count % 10) / 10 + 0.5, (count % 10) / 10 + (0.5), (count % 10) / 10 + (0.5));
-            // }
         }
 
         if (count % 30 == 0 && boxMeshes.length < 500) {
-            var halfExtents = new CANNON.Vec3(1, 1, 1);
-            var boxShape = new CANNON.Box(halfExtents);
             var boxShape = new CANNON.Sphere(0.5);
-            var boxGeometry = new THREE.BoxGeometry(halfExtents.x * 2, halfExtents.y * 2, halfExtents.z * 2);
             var boxGeometry = new THREE.SphereGeometry(0.5, 20, 20);
 
             var x = (Math.random() - 0.5) * 40;
@@ -616,11 +601,10 @@ function animate() {
             if (count == 60) {
                 count = 0;
                 let removedMesh = boxMeshes[0];
-                scene.getObjectById(removedMesh.id).geometry.dispose();
-                scene.getObjectById(removedMesh.id).material.dispose();
                 scene.remove(scene.getObjectById(removedMesh.id));
                 let removedElemMesh = boxMeshes.shift();
                 let removedElem = boxes.shift();
+                world.removeBody(removedElem);
                 removedElemMesh = undefined;
                 removedElem = undefined;
                 renderer.render(scene, camera);
@@ -646,8 +630,6 @@ function animate() {
 function ExplodeAnimation(x, y) {
     if (parts.length > 1) {
         let part = parts.shift();
-        part.object.geometry.dispose();
-        part.object.material.dispose();
         scene.remove(part.object);
         dirs = [];
         renderer.render(scene, camera);
@@ -692,8 +674,6 @@ function ExplodeAnimation(x, y) {
     let obj = this.object;
     setTimeout(function () {
         if (obj) {
-            scene.getObjectById(obj.id, true).geometry.dispose();
-            scene.getObjectById(obj.id, true).material.dispose();
             scene.remove(scene.getObjectById(obj.id));
         }
     }, 2000);
@@ -782,17 +762,12 @@ window.addEventListener("click", function (e) {
                 } else if (boxes.map(x => x.id).includes(e.contact.bi.id)) {
                     let boxIdx = boxes.findIndex(x => x.id == e.contact.bi.id);
                     let removedMesh = boxMeshes[boxIdx];
-                    scene.getObjectById(removedMesh.id, true).geometry.dispose();
-                    scene.getObjectById(removedMesh.id, true).material.dispose();
                     scene.remove(scene.getObjectById(removedMesh.id));
-                    // console.log(boxIdx)
                     boxMeshes.splice(boxIdx, 1);
                     boxes.splice(boxIdx, 1);
+                    world.removeBody(ballBody);
 
                     if (ballMesh && scene.getObjectById(ballMesh.id, true)) {
-                        // console.log("~~~ball mesh ", ballMesh.id, ballMeshes);
-                        scene.getObjectById(ballMesh.id, true).geometry.dispose();
-                        scene.getObjectById(ballMesh.id, true).material.dispose();
                         scene.remove(scene.getObjectById(ballMesh.id));
 
                         let idx = ballMeshes.findIndex(x => x.id == ballMesh.id);
@@ -817,18 +792,14 @@ window.addEventListener("click", function (e) {
 
             setTimeout(function () {
                 if (ballMesh && scene.getObjectById(ballMesh.id, true)) {
-                    scene.getObjectById(ballMesh.id, true).geometry.dispose();
-                    scene.getObjectById(ballMesh.id, true).material.dispose();
                     scene.remove(scene.getObjectById(ballMesh.id));
 
                     let idx = ballMeshes.findIndex(x => x.id == ballMesh.id);
                     ballMeshes.splice(idx, 1);
                     balls[idx] = undefined
                     balls.splice(idx, 1);
-
                     ballMesh = undefined;
-
-
+                    world.removeBody(ballBody);
                 }
             }, 3000);
 
