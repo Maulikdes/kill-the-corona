@@ -1,0 +1,7 @@
+spec:
+ name: kill-the-corona
+ static_sites:
+ - git:
+     branch: main
+     repo_clone_url: https://github.com/Maulikdes/kill-the-corona.git
+   name: kill-the-corona
