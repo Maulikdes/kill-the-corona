@@ -46,9 +46,11 @@ var PointerLockControls = function (camera, cannonBody) {
 
 
         if (contact.si.constructor.name == 'Sphere' && contact.sj.constructor.name == 'Sphere') {
-            gotAHit.currentTime = 0;
-            gotAHit.play();
-            reduceHealth();
+            if(contact.sj.radius!=0.2 && contact.si.radius!=0.2){
+                gotAHit.currentTime = 0;
+                gotAHit.play();
+                reduceHealth();
+            }
         }
 
         // contact.bi and contact.bj are the colliding bodies, and contact.ni is the collision normal.
