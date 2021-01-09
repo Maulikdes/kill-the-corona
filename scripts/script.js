@@ -819,8 +819,8 @@ function increaseCounter() {
 }
 
 function reduceHealth() {
-    document.getElementById("health").style.width = (document.getElementById("health").style.width.replace("px", "") - 8) + "px";
-    if ((document.getElementById("health").style.width.replace("px", "") - 8) < 0) {
+    document.getElementById("health").style.width = (document.getElementById("health").style.width.replace("px", "") - 12) + "px";
+    if ((document.getElementById("health").style.width.replace("px", "") - 12) < 0) {
         controls.enabled = false;
 
         document.getElementById("result").innerHTML = document.getElementById("score").innerHTML;
